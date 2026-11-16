@@ -1,52 +1,29 @@
 name: cloudweave
 
 services:
-  # Redis
   redis:
     image: redis:7-alpine
     container_name: cloudweave-redis
-    restart: unless-stopped
-
     ports:
       - "6379:6379"
-
     command: ["redis-server", "--appendonly", "yes"]
-
     volumes:
       - cloudweave-redis-data:/data
 
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3sdocker compose ps
-      retries: 5
-
-  # RedisInsight
   redisinsight:
     image: redis/redisinsight:latest
     container_name: cloudweave-redisinsight
-    restart: unless-stopped
-
     ports:
       - "8001:5540"
-
     depends_on:
-      redis:
-        condition: service_healthy
+      - redis
 
-    volumes:
-      - cloudweave-redisinsight-data:/data
-
-  # Mailpit
   mailpit:
     image: axllent/mailpit:latest
     container_name: cloudweave-mailpit
-    restart: unless-stopped
-
     ports:
       - "8025:8025"
       - "1025:1025"
 
 volumes:
   cloudweave-redis-data:
-  cloudweave-redisinsight-data:
